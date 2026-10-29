@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微信域名强开</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system}
+body{background:#f0f2f5;padding:16px}
+.wrap{max-width:480px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden}
+.top-bar{background:#4158E8;color:#fff;text-align:center;padding:16px;font-size:20px;font-weight:bold}
+.inner{padding:20px}
+.item{margin-bottom:16px}
+label{display:block;margin-bottom:6px;color:#444}
+input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:15px}
+.btn-purple{width:100%;padding:13px;background:#8249E8;color:#fff;border:none;border-radius:8px;font-size:16px;margin:8px 0}
+.btn-blue{width:100%;padding:13px;background:#4158E8;color:#fff;border:none;border-radius:8px;font-size:16px;margin-top:8px}
+.tip-success{color:#22aa44;margin:8px 0}
+.tip-error{color:#dd3333;margin:8px 0}
+.result-box{margin-top:12px;padding:12px;background:#f7f8fa;border-radius:8px;display:none}
+.copy-row{display:flex;gap:8px;margin:6px 0}
+.copy-row input{flex:1;margin:0}
+.copy-row button{padding:0 12px;border:none;background:#4158E8;color:#fff;border-radius:6px}
+.tab{display:flex;margin-top:20px}
+.tab>div{flex:1;text-align:center;padding:12px;color:#666;border-top:1px solid #eee}
+.tab>div.active{color:#4158E8;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-bar">微信域名强开</div>
+  <div class="inner">
+    <div class="item">
+      <label>通道列表</label>
+      <select id="channel">
+        <option value="default">默认通道</option>
+      </select>
+    </div>
+    <div class="item">
+      <label>强开 / 跳转网址</label>
+      <input id="target" placeholder="https://example.com">
+    </div>
+    <button class="btn-purple" onclick="testIframe()">测试是否支持强开</button>
+    <div id="testTip"></div>
+    <div class="item">
+      <label>生成模式</label>
+      <select id="mode">
+        <option value="iframe">强开模式 (iframe)</option>
+        <option value="jump">跳转模式</option>
+      </select>
+    </div>
+    <div class="item">
+      <label>页面标题</label>
+      <input id="title" placeholder="临时通道" value="临时通道">
+    </div>
+    <div class="item">
+      <label>过期时间（分钟）</label>
+      <input id="expire" type="number" value="10" min="1" max="1440">
+    </div>
+    <button class="btn-blue" onclick="createLink()">生成链接</button>
+    <div class="result-box" id="resultBox">
+      <div class="tip-success">✅ 生成成功</div>
+      <div class="copy-row">
+        <input id="linkOut" readonly>
+        <button onclick="copyVal('linkOut')">复制</button>
+      </div>
+      <div class="copy-row">
+        <input id="idOut" readonly>
+        <button onclick="copyVal('idOut')">复制</button>
+      </div>
+      <div>过期：<span id="expireTip"></span></div>
+    </div>
+  </div>
+  <div class="tab">
+    <div class="active" onclick="location.href='index.html'">生成</div>
+    <div onclick="location.href='account.html'">账号</div>
+    <div onclick="location.href='record.html'">记录</div>
+  </div>
+</div>
+<script>
+// ==========这里改成你的Worker地址==========
+const API_BASE = "https://xxx.xxx.workers.dev";
+function copyVal(id){
+  const v = document.getElementById(id).value;
+  navigator.clipboard.writeText(v);
+}
+async function testIframe(){
+  const url = document.getElementById("target").value;
+  if(!url) return alert("请输入网址");
+  const res = await fetch(API_BASE+"/api/testiframe",{
+    method:"POST",
+    headers:{"content-type":"application/json"},
+    body:JSON.stringify({url})
+  })
+  const d = await res.json();
+  const tip = document.getElementById("testTip");
+  if(d.ok){
+    tip.innerHTML = `<div class="tip-success">✅ 支持嵌入</div>`;
+  }else{
+    tip.innerHTML = `<div class="tip-error">❌ 不支持iframe嵌入</div>`;
+  }
+}
+async function createLink(){
+  const target = document.getElementById("target").value;
+  const mode = document.getElementById("mode").value;
+  const title = document.getElementById("title").value;
+  const expire = Number(document.getElementById("expire").value);
+  const res = await fetch(API_BASE+"/api/create",{
+    method:"POST",
+    headers:{"content-type":"application/json"},
+    body:JSON.stringify({target,mode,title,expire})
+  })
+  const d = await res.json();
+  if(d.success){
+    document.getElementById("resultBox").style.display="block";
+    document.getElementById("linkOut").value = d.url;
+    document.getElementById("idOut").value = d.id;
+    document.getElementById("expireTip").innerText = d.expireText;
+  }else{
+    alert(d.msg);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>链接记录</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
+body{background:#f0f2f5;padding:16px}
+.wrap{max-width:480px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden}
+.top-bar{background:#4158E8;color:#fff;text-align:center;padding:16px;font-size:20px;font-weight:bold}
+.inner{padding:20px}
+.item{padding:14px;border:1px solid #eee;border-radius:10px;margin-bottom:12px}
+.del-btn{background:#dd3333;color:#fff;border:none;padding:6px 12px;border-radius:6px;margin-top:6px}
+.tab{display:flex;margin-top:20px}
+.tab>div{flex:1;text-align:center;padding:12px;color:#666;border-top:1px solid #eee}
+.tab>div.active{color:#4158E8;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-bar">链接记录</div>
+  <div class="inner" id="listBox">加载中...</div>
+  <div class="tab">
+    <div onclick="location.href='index.html'">生成</div>
+    <div onclick="location.href='account.html'">账号</div>
+    <div class="active" onclick="location.href='record.html'">记录</div>
+  </div>
+</div>
+<script>
+const API_BASE = "https://xxx.xxx.workers.dev";
+(async ()=>{
+  const res = await fetch(API_BASE+"/api/list");
+  const d = await res.json();
+  const box = document.getElementById("listBox");
+  if(d.list.length ===0){
+    box.innerHTML = "<div>暂无记录</div>";
+    return;
+  }
+  let h = "";
+  d.list.forEach(i=>{
+    h += `<div class="item">
+短ID：${i.id}<br/>
+目标：${i.target}<br/>
+标题：${i.title}<br/>
+模式：${i.mode}<br/>
+访问：${i.view}<br/>
+<button class="del-btn" onclick="del('${i.id}')">删除</button>
+</div>`;
+  })
+  box.innerHTML = h;
+})()
+async function del(id){
+  await fetch(API_BASE+"/api/del",{
+    method:"POST",
+    headers:{"content-type":"application/json"},
+    body:JSON.stringify({id})
+  })
+  location.reload();
+}
+</script>
+</body>
+</html>

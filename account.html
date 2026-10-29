@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>账号管理</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
+body{background:#f0f2f5;padding:16px}
+.wrap{max-width:480px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden}
+.top-bar{background:#4158E8;color:#fff;text-align:center;padding:16px;font-size:20px;font-weight:bold}
+.inner{padding:20px}
+.item{margin-bottom:16px}
+label{display:block;margin-bottom:6px;color:#444}
+input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:15px}
+.btn-blue{width:100%;padding:13px;background:#4158E8;color:#fff;border:none;border-radius:8px;font-size:16px}
+.tab{display:flex;margin-top:20px}
+.tab>div{flex:1;text-align:center;padding:12px;color:#666;border-top:1px solid #eee}
+.tab>div.active{color:#4158E8;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-bar">添加账号</div>
+  <div class="inner">
+    <div class="item">
+      <label>账号名称</label>
+      <input placeholder="例如：主账号">
+    </div>
+    <div class="item">
+      <label>（CF版本无需Github Token）</label>
+      <input disabled placeholder="ghp_...">
+    </div>
+    <div class="item">
+      <label>用户名</label>
+      <input disabled placeholder="username">
+    </div>
+    <div class="item">
+      <label>仓库名</label>
+      <input disabled placeholder="repo-name">
+    </div>
+    <div class="item">
+      <label>分支名</label>
+      <input disabled placeholder="main">
+    </div>
+    <div class="item">
+      <label>Pages URL</label>
+      <input disabled placeholder="https://xxx.github.io/xxx">
+    </div>
+    <button class="btn-blue">保存账号</button>
+  </div>
+  <div class="tab">
+    <div onclick="location.href='index.html'">生成</div>
+    <div class="active" onclick="location.href='account.html'">账号</div>
+    <div onclick="location.href='record.html'">记录</div>
+  </div>
+</div>
+</body>
+</html>
